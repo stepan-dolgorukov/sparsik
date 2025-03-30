@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <getopt.h>
 
 int main(int amount_args, char* args[])
 {
@@ -10,6 +11,26 @@ int main(int amount_args, char* args[])
   char* input = NULL;
   ssize_t amount_bytes_read = -1;
   size_t size_block = 4096u;
+  int key = -1;
+
+  while ((key = getopt(amount_args, args, "s:")) != -1)
+  {
+    switch (key)
+    {
+      case 's':
+      {
+        char* end = NULL;
+
+        size_block = strtoull(optarg, &end, 10);
+        break;
+      }
+
+      case '?':
+      default:
+        fprintf(stderr, "Undefined key.\n");
+        return 1;
+    }
+  }
 
   input = malloc(size_block);
 
