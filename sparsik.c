@@ -1,15 +1,24 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <unistd.h>
 #include <fcntl.h>
 
-#define size_block (4096u)
-
-int main()
+int main(int amount_args, char* args[])
 {
   int descriptor_file_output = -1;
-  char input[size_block] = {'\0'};
+  char* input = NULL;
   ssize_t amount_bytes_read = -1;
+  size_t size_block = 4096u;
+
+  input = malloc(size_block);
+
+  if (NULL == input)
+  {
+    fprintf(stderr, "Couldn't allocate an array to store a data from an input.");
+
+    return 1;
+  }
 
   descriptor_file_output = open("output", O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 
@@ -57,6 +66,8 @@ int main()
       }
     }
   }
+
+  free(input);
 
   if (-1 == amount_bytes_read)
   {
