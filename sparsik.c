@@ -72,11 +72,15 @@ int main(int amount_args, char* args[])
   if (-1 == amount_bytes_read)
   {
     fprintf(stderr, "Unsuccessfull read.\n");
+
+    return 1;
   }
 
   if (0 != close(descriptor_file_output))
   {
-    fprintf(stderr, "Unsuccessfull close.\n"); 
+    fprintf(stderr, "Unsuccessfull close.\n");
+
+    return 1;
   }
 
   return 0;
