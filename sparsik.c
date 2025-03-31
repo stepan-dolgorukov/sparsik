@@ -7,11 +7,14 @@
 
 int main(int amount_args, char* args[])
 {
-  int descriptor_file_output = -1;
+  int descriptor_file_output = 1;
+  int descriptor_file_input = 0;
   char* input = NULL;
   ssize_t amount_bytes_read = -1;
   size_t size_block = 4096u;
   int key = -1;
+  char* file_input = NULL;
+  char* file_output = NULL;
 
   while ((key = getopt(amount_args, args, "s:")) != -1)
   {
@@ -32,6 +35,24 @@ int main(int amount_args, char* args[])
     }
   }
 
+  if (optind < amount_args)
+  {
+    if (optind + 1 == amount_args)
+    {
+      file_output = args[optind];
+    }
+
+    else
+    {
+      file_input = args[optind++];
+
+      if (optind < amount_args)
+      {
+        file_output = args[optind];
+      }
+    }
+  }
+
   input = malloc(size_block);
 
   if (NULL == input)
@@ -41,16 +62,31 @@ int main(int amount_args, char* args[])
     return 1;
   }
 
-  descriptor_file_output = open("output", O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
-
-  if (descriptor_file_output == -1)
+  if (NULL != file_input)
   {
-    fprintf(stderr, "Unsuccessfull open.\n");
+    descriptor_file_input = open(file_input, O_RDONLY);
+  }
+
+  if (descriptor_file_input == -1)
+  {
+    fprintf(stderr, "Unsuccessfull open for read.\n");
 
     return 1;
   }
 
-  while ((amount_bytes_read = read(0, &input[0], size_block)) > 0)
+  if (NULL != file_output)
+  {
+    descriptor_file_output = open(file_output, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+  }
+
+  if (descriptor_file_output == -1)
+  {
+    fprintf(stderr, "Unsuccessfull open for write.\n");
+
+    return 1;
+  }
+
+  while ((amount_bytes_read = read(descriptor_file_input, &input[0], size_block)) > 0)
   {
     char* begin = &input[0];
     char* pointer = begin;
@@ -97,7 +133,14 @@ int main(int amount_args, char* args[])
     return 1;
   }
 
-  if (0 != close(descriptor_file_output))
+  if (0 != descriptor_file_input && 0 != close(descriptor_file_input))
+  {
+    fprintf(stderr, "Unsuccessfull close.\n");
+
+    return 1;
+  }
+
+  if (1 != descriptor_file_output && 0 != close(descriptor_file_output))
   {
     fprintf(stderr, "Unsuccessfull close.\n");
 
