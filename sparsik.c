@@ -25,6 +25,14 @@ int main(int amount_args, char* args[])
         char* end = NULL;
 
         size_block = strtoull(optarg, &end, 10);
+
+        if (0 == size_block)
+        {
+          fprintf(stderr, "Block size is set to 0.\n");
+
+          return 1;
+        }
+
         break;
       }
 
