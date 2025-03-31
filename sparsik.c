@@ -73,13 +73,13 @@ int main(int amount_args, char* args[])
   if (NULL != file_input)
   {
     descriptor_file_input = open(file_input, O_RDONLY);
-  }
 
-  if (descriptor_file_input == -1)
-  {
-    fprintf(stderr, "Unsuccessfull open for read.\n");
+    if (descriptor_file_input == -1)
+    {
+      fprintf(stderr, "Unsuccessfull open for read.\n");
 
-    return 1;
+      return 1;
+    }
   }
 
   if (NULL != file_output)
